@@ -165,14 +165,25 @@ start processing it. R has very powerful tools to make nice plots and
 visualization. Show what are the most common words for negative and
 positive examples as a histogram, word cloud etc. Be creative!
 
+
 ## Classifier implementation
+
+```{r}
+spam_test_df = test %>% filter(Category=="spam") %>% count(Category, Message, result=1)
+ham_test_df = test %>% filter(Category=="ham") %>% count(Category, Message, result=1)
+is_spam = nrow(train %>% filter(Category=="spam"))/nrow(train)
+is_not_spam = 1 - ratio_is_spam
+```
 
 ```{r}
 naiveBayes <- setRefClass("naiveBayes",
 
        # here it would be wise to have some vars to store intermediate result
        # frequency dict etc. Though pay attention to bag of words!
+
+        # X_test - for spam, y_test - for ham (non-spam)
        fields = list(),
+
        methods = list(
                     # prepare your training data as X - bag of words for each of your
                     # messages and corresponding label for the message encoded as 0 or 1
@@ -185,7 +196,7 @@ naiveBayes <- setRefClass("naiveBayes",
                     # return prediction for a single message
                     predict = function(message)
                     {
-                         # TODO
+                         #TODO: split message into words, for each list calc the probability, return the highest
                     },
 
                     # score you test set so to get the understanding how well you model
