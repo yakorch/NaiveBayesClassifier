@@ -76,7 +76,7 @@ first one you will need find the probabilities distributions for each of
 the features, while the second one is needed for checking how well your
 classifier works.
 
-```{r}
+```{r Including packages}
 # here goes a list of recommended libraries,
 # though you may install other ones if they are needed
 library(tidytext)
@@ -127,12 +127,9 @@ library(ggplot2)
         . Note that it also includes an example on how to create a bag
         of words from your text document.
 
-```{r}
-list.files(getwd())
-list.files("data/4-spam")
-```
 
-```{r}
+
+```{r Adding stop words}
 test_path <- "data/4-spam/test.csv"
 train_path <- "data/4-spam/train.csv"
 
@@ -141,12 +138,12 @@ splitted_stop_words <- strsplit(stop_words, split='\n')
 splitted_stop_words <- splitted_stop_words[[1]]
 ```
 
-```{r}
+```{r Reading the data}
 train <-  read.csv(file = train_path, stringsAsFactors = FALSE)
 test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 ```
 
-```{r}
+```{r Cleaning the data}
 # note the power functional features of R bring us! 
 tidy_text <- unnest_tokens(train, output = 'word', input ='Message') %>%
              filter(!word %in% splitted_stop_words)
@@ -168,28 +165,28 @@ positive examples as a histogram, word cloud etc. Be creative!
 
 ## Classifier implementation
 
-```{r}
+```{r Helping values}
 spam_test_df = test %>% filter(Category=="spam") %>% count(Category, Message, result=1)
 ham_test_df = test %>% filter(Category=="ham") %>% count(Category, Message, result=1)
 is_spam = nrow(train %>% filter(Category=="spam"))/nrow(train)
 is_not_spam = 1 - is_spam
 ```
 
-```{r}
+```{r Class Definition}
 naiveBayes <- setRefClass("naiveBayes",
 
        # here it would be wise to have some vars to store intermediate result
        # frequency dict etc. Though pay attention to bag of words!
 
         # X_test - for spam, y_test - for ham (non-spam)
-       fields = list(X_test="matrix", y_test="matrix"),
+       fields = list(X_test="data.frame", y_test="data.frame"),
 
        methods = list(
                     # prepare your training data as X - bag of words for each of your
                     # messages and corresponding label for the message encoded as 0 or 1
                     # (binary classification task)
 
-                    fit = function(X, y)
+                    fit = function()
                     {
                       for (row in 1:nrow(spam_test_df)){
                         val = predict(spam_test_df[row, -4])
@@ -214,44 +211,45 @@ naiveBayes <- setRefClass("naiveBayes",
                     {
                          #TODO: split message into words, for each list calc the probability, return the highest
                       words <- unnest_tokens(message, output = 'word', input = 'Message')
-                      dfs = list(spam_df, non_spam_df)
-                      res = list(0, 0)
+                      dfs <- list(spam_df, non_spam_df)
+                      res <- list(0, 0)
                       for (ind in 1:2){
-                        df = dfs[ind]
-                        sum = 1
+                        curr_df <- dfs[[ind]]
+                        sum <- 1
                         for (row in 1:nrow(words)) {
-                            sum = sum * calc_probability(words[row, "word"], df)
+                            sum <- sum * calc_probability(words[row, "word"], curr_df)
                         }
                         if (ind == 1){
-                          res[1] = sum * is_spam
+                          res[[1]] = sum * is_spam
                         }
                         else{
-                          res[2] = sum * is_not_spam
+                          res[[2]] = sum * is_not_spam
                         }
                       }
-                      if (res[1] > res[2]){
+                      if (res[[1]] > res[[2]]){
                         return(0)
                       }
                       return(1)
                     },
 
-                    calc_probability = function (word, df){
-                        pos = which(df["word"] == word)
+                    calc_probability = function (word, cur_df){
+                        pos <- which(cur_df["word"] == word)
+                        divisor <- nrow(cur_df) + nrow(df)
                         if (length(pos) == 0){
-                          # no occurence
+                          return(1/divisor)
                         }
                         else {
-                          occurences = spam_df["n"][pos, ]
+                          occurences = cur_df["n"][pos, ]
+                          return ((1+occurences)/divisor)
                         }
-
-                    }
+                    },
 
                     # score you test set so to get the understanding how well you model
                     # works.
                     # look at f1 score or precision and recall
                     # visualize them
                     # try how well your model generalizes to real world data!
-                    score = function(X_test, y_test)
+                    score = function()
                       {
                       #X_Test - identified as spam
                       #y_test - identified as ham
@@ -296,8 +294,10 @@ naiveBayes <- setRefClass("naiveBayes",
 ))
 
 model = naiveBayes()
-model$predict(spam_test_df[1, -4])
 model$fit()
+model$score()
+# model$predict(spam_test_df[1, -4])
+
 ```
 
 ## Measure effectiveness of your classifier
