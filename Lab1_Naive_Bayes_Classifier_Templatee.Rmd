@@ -252,9 +252,47 @@ naiveBayes <- setRefClass("naiveBayes",
                     # visualize them
                     # try how well your model generalizes to real world data!
                     score = function(X_test, y_test)
-                    {
-                         # TODO
-                    }
+                      {
+                      #X_Test - identified as spam
+                      #y_test - identified as ham
+                      spam_true <- X_test[X_test$result == TRUE, ]
+                      spam_true_amount <- nrow(spam_true)
+                      Precision <- spam_true_amount / nrow(X_test)
+                      
+                      ham_false <- y_test[y_test$result == FALSE, ]
+                      ham_false_amount <- nrow(ham_false)
+                      Recall <- spam_true_amount / (ham_false_amount + spam_true_amount)
+                      
+                      F1 <- 2 * (Precision * Recall / (Precision + Recall))
+                      
+                      ham_true_amount = nrow(y_test) - nrow(ham_false)
+                      spam_false_amount = nrow(X_test) - nrow(spam_true)
+                      numbers_of_guesses = 
+                        c(spam_true_amount, ham_true_amount, spam_false_amount
+                          ,ham_false_amount)
+                      par(mfrow = c(1, 2))
+                      
+                      barplot(numbers_of_guesses,
+                              main = "Predicted messages",
+                              xlab = "Predictions",
+                              ylab = "Number of messages",
+                              names.arg = c("Predicted right spam", "Predicted right 
+                                            ham", 
+                                            "Predicted wrong spam", "Predicted wrong 
+                                            ham"),
+                              col = c("green", "green", "red", "red"),
+                              horiz = FALSE)
+                      
+                      metrics <- c(Precision, Recall, F1)
+                      barplot(
+                        metrics,
+                        main = "Predictions acuraccy",
+                        xlab = "metrics",
+                        ylab = "values",
+                        names.arg = c("Precision", "Recall", "F1 score"),
+                        col = "yellow",
+                        horiz = FALSE)
+                      }
 ))
 
 model = naiveBayes()
