@@ -149,10 +149,10 @@ test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 
 ```{r}
 # note the power functional features of R bring us! 
-tidy_text <- unnest_tokens(train, 'splitted', 'Message', token="words") %>%
-             filter(!splitted %in% stop_words)
+tidy_text <- unnest_tokens(train, output = 'word', input ='Message') %>%
+             filter(!word %in% splitted_stop_words)
 
-df <-tidy_text %>% count(splitted,sort=TRUE); df
+df <- tidy_text %>% count(splitted,sort=TRUE)
 ```
 
 ### Data visualization
