@@ -193,7 +193,7 @@ naiveBayes <- setRefClass("naiveBayes",
                     {
                       for (row in 1:nrow(spam_test_df)){
                         val = predict(spam_test_df[row, "Message"])
-                        if (val == 0){
+                        if (val == 1){
                           spam_test_df[row, "result"] = 0
                         }
                       }
@@ -203,14 +203,16 @@ naiveBayes <- setRefClass("naiveBayes",
                             ham_test_df[row, "result"] = 0
                         }
                       }
-                        X_test <- spam_test_df
-                        y_test <- ham_test_df
+                        X_test <<- spam_test_df
+                        y_test <<- ham_test_df
                     }
 
 
                     ,
 
                     # return prediction for a single message
+
+                    # 0 - spam, 1 - non-spam
                     predict = function(message)
                     {
                          #TODO: split message into words, for each list calc the probability, return the highest
