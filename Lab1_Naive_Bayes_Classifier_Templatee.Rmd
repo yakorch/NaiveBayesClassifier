@@ -255,11 +255,14 @@ naiveBayes <- setRefClass("naiveBayes",
                       #y_test - identified as ham
                       spam_true <- X_test[X_test$result == TRUE, ]
                       spam_true_amount <- nrow(spam_true)
-                      Precision <- spam_true_amount / nrow(X_test)
                       
                       ham_false <- y_test[y_test$result == FALSE, ]
                       ham_false_amount <- nrow(ham_false)
-                      Recall <- spam_true_amount / (ham_false_amount + spam_true_amount)
+                      
+                      Precision <- spam_true_amount / (spam_true_amount + 
+                                                         ham_false_amount)
+                      
+                      Recall <- spam_true_amount / nrow(X_test)
                       
                       F1 <- 2 * (Precision * Recall / (Precision + Recall))
                       
