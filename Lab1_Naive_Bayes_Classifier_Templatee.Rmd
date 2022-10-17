@@ -2,6 +2,9 @@
 editor_options:
   markdown:
     wrap: 72
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -175,17 +178,10 @@ is_not_spam = 1 - is_spam
 ```{r Class Definition}
 naiveBayes <- setRefClass("naiveBayes",
 
-       # here it would be wise to have some vars to store intermediate result
-       # frequency dict etc. Though pay attention to bag of words!
-
         # X_test - for spam, y_test - for ham (non-spam)
        fields = list(X_test="data.frame", y_test="data.frame"),
 
        methods = list(
-                    # prepare your training data as X - bag of words for each of your
-                    # messages and corresponding label for the message encoded as 0 or 1
-                    # (binary classification task)
-
                     fit = function()
                     {
                       for (row in 1:nrow(spam_test_df)){
@@ -204,8 +200,8 @@ naiveBayes <- setRefClass("naiveBayes",
                         y_test <<- ham_test_df
                     },
 
-                    # return prediction for a single message
 
+                    # returns prediction for a single message
                     # 0 - spam, 1 - non-spam
                     predict = function(message)
                     {
@@ -232,6 +228,7 @@ naiveBayes <- setRefClass("naiveBayes",
                       return(1)
                     },
 
+                    # calculates the probability for a single word
                     calc_probability = function (word, cur_df){
                         pos <- which(cur_df["word"] == word)
                         divisor <- nrow(cur_df) + nrow(df)
@@ -297,9 +294,7 @@ naiveBayes <- setRefClass("naiveBayes",
 ))
 
 model = naiveBayes()
-model$fit()
-model$score()
-# model$predict(spam_test_df[1, -4])
+
 
 ```
 
@@ -308,6 +303,10 @@ model$score()
     Look at precision and recall curves, F1 score metric.
 -   Visualize them.
 -   Show failure cases.
+```{r Visualization}
+model$fit()
+model$score()
+```
 
 ## Conclusions
 
