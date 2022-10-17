@@ -214,8 +214,8 @@ naiveBayes <- setRefClass("naiveBayes",
                     {
                          #TODO: split message into words, for each list calc the probability, return the highest
                       words <- unnest_tokens(message, output = 'word', input = 'Message')
-                      dfs = c(spam_df, non_spam_df)
-                      res = c(0, 0)
+                      dfs = list(spam_df, non_spam_df)
+                      res = list(0, 0)
                       for (ind in 1:2){
                         df = dfs[ind]
                         sum = 1
@@ -234,6 +234,17 @@ naiveBayes <- setRefClass("naiveBayes",
                       }
                       return(1)
                     },
+
+                    calc_probability = function (word, df){
+                        pos = which(df["word"] == word)
+                        if (length(pos) == 0){
+                          # no occurence
+                        }
+                        else {
+                          occurences = spam_df["n"][pos, ]
+                        }
+
+                    }
 
                     # score you test set so to get the understanding how well you model
                     # works.
