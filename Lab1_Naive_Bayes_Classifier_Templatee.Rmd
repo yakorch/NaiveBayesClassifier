@@ -192,23 +192,20 @@ naiveBayes <- setRefClass("naiveBayes",
                     fit = function(X, y)
                     {
                       for (row in 1:nrow(spam_test_df)){
-                        val = predict(spam_test_df[row, "Message"])
+                        val = predict(spam_test_df[row, -4])
                         if (val == 1){
                           spam_test_df[row, "result"] = 0
                         }
                       }
                       for (row in 1:nrow(ham_test_df)){
-                        val = predict(ham_test_df[row, "Message"])
+                        val = predict(ham_test_df[row, -4])
                         if (val == 0){
                             ham_test_df[row, "result"] = 0
                         }
                       }
                         X_test <<- spam_test_df
                         y_test <<- ham_test_df
-                    }
-
-
-                    ,
+                    },
 
                     # return prediction for a single message
 
@@ -216,7 +213,26 @@ naiveBayes <- setRefClass("naiveBayes",
                     predict = function(message)
                     {
                          #TODO: split message into words, for each list calc the probability, return the highest
+                      words <- unnest_tokens(message, output = 'word', input = 'Message')
+                      dfs = c(spam_df, non_spam_df)
+                      res = c(0, 0)
+                      for (ind in 1:2){
+                        df = dfs[ind]
+                        sum = 1
+                        for (row in 1:nrow(words)) {
+                            sum = sum * calc_probability(words[row, "word"], df)
+                        }
+                        if (ind == 1){
+                          res[1] = sum * is_spam
+                        }
+                        else{
+                          res[2] = sum * is_not_spam
+                        }
+                      }
+                      if (res[1] > res[2]){
                         return(0)
+                      }
+                      return(1)
                     },
 
                     # score you test set so to get the understanding how well you model
@@ -231,8 +247,7 @@ naiveBayes <- setRefClass("naiveBayes",
 ))
 
 model = naiveBayes()
-model$predict("tidy_text <- unnest_tokens(train, output = 'word', input ='Message') %>%
-             filter(!word %in% splitted_stop_words)")
+model$predict(spam_test_df[1, -4])
 model$fit()
 ```
 
