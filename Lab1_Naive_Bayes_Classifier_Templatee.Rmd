@@ -137,7 +137,6 @@ test_path <- "data/4-spam/test.csv"
 train_path <- "data/4-spam/train.csv"
 
 stop_words <- read_file("stop_words.txt")
-# https://stackoverflow.com/questions/27195912/why-does-strsplit-return-a-list
 splitted_stop_words <- strsplit(stop_words, split='\n')
 splitted_stop_words <- splitted_stop_words[[1]]
 ```
@@ -152,7 +151,11 @@ test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 tidy_text <- unnest_tokens(train, output = 'word', input ='Message') %>%
              filter(!word %in% splitted_stop_words)
 
-df <- tidy_text %>% count(splitted,sort=TRUE)
+df <- tidy_text %>% count(word, sort=TRUE)
+
+df_with_categories <- tidy_text %>% count(Category, word, sort=TRUE)
+spam_df <- df_with_categories %>% filter(Category=="spam")
+non_spam_df <- df_with_categories %>% filter(Category=="ham")
 ```
 
 ### Data visualization
@@ -168,7 +171,7 @@ positive examples as a histogram, word cloud etc. Be creative!
 naiveBayes <- setRefClass("naiveBayes",
 
        # here it would be wise to have some vars to store intermediate result
-       # frequency dict etc. Though pay attention to bag of wards!
+       # frequency dict etc. Though pay attention to bag of words!
        fields = list(),
        methods = list(
                     # prepare your training data as X - bag of words for each of your
