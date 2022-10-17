@@ -172,7 +172,7 @@ positive examples as a histogram, word cloud etc. Be creative!
 spam_test_df = test %>% filter(Category=="spam") %>% count(Category, Message, result=1)
 ham_test_df = test %>% filter(Category=="ham") %>% count(Category, Message, result=1)
 is_spam = nrow(train %>% filter(Category=="spam"))/nrow(train)
-is_not_spam = 1 - ratio_is_spam
+is_not_spam = 1 - is_spam
 ```
 
 ```{r}
@@ -182,21 +182,39 @@ naiveBayes <- setRefClass("naiveBayes",
        # frequency dict etc. Though pay attention to bag of words!
 
         # X_test - for spam, y_test - for ham (non-spam)
-       fields = list(),
+       fields = list(X_test="matrix", y_test="matrix"),
 
        methods = list(
                     # prepare your training data as X - bag of words for each of your
                     # messages and corresponding label for the message encoded as 0 or 1
                     # (binary classification task)
+
                     fit = function(X, y)
                     {
-                         # TODO
-                    },
+                      for (row in 1:nrow(spam_test_df)){
+                        val = predict(spam_test_df[row, "Message"])
+                        if (val == 0){
+                          spam_test_df[row, "result"] = 0
+                        }
+                      }
+                      for (row in 1:nrow(ham_test_df)){
+                        val = predict(ham_test_df[row, "Message"])
+                        if (val == 0){
+                            ham_test_df[row, "result"] = 0
+                        }
+                      }
+                        X_test <- spam_test_df
+                        y_test <- ham_test_df
+                    }
+
+
+                    ,
 
                     # return prediction for a single message
                     predict = function(message)
                     {
                          #TODO: split message into words, for each list calc the probability, return the highest
+                        return(0)
                     },
 
                     # score you test set so to get the understanding how well you model
@@ -211,6 +229,8 @@ naiveBayes <- setRefClass("naiveBayes",
 ))
 
 model = naiveBayes()
+model$predict("tidy_text <- unnest_tokens(train, output = 'word', input ='Message') %>%
+             filter(!word %in% splitted_stop_words)")
 model$fit()
 ```
 
