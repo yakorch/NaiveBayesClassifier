@@ -61,6 +61,7 @@ library(tidytext)
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(wordcloud)
 ```
 
 ## Instructions
@@ -90,7 +91,7 @@ test_path <- "data/4-spam/test.csv"
 train_path <- "data/4-spam/train.csv"
 
 stop_words <- read_file("stop_words.txt")
-splitted_stop_words <- strsplit(stop_words, split='\n')
+splitted_stop_words <- strsplit(stop_words, split="[\r\n|\n]")
 splitted_stop_words <- splitted_stop_words[[1]]
 ```
 ## Reading these files:
@@ -282,6 +283,19 @@ naiveBayes <- setRefClass("naiveBayes",
                       legend("bottomright",              
                           legend = c("Spam", "Ham", "Accuracy"),
                           fill = c("#1b98e0", "#353436", "orange"))
+                    },
+                    
+                    frequentWords = function()
+                    {
+                      par(mfrow = c(1, 3))
+                     
+                      wordcloud(words = spam_df$word, freq = spam_df$n, min.freq = 5, max.words=40, random.order=FALSE, colors = 'red', use.r.layout=FALSE)
+                      plot.new()
+                      legend("top", legend = c("Spam", "Ham"), fill = c("red", "green"), title="Frequent words")
+                      wordcloud(words = non_spam_df$word, freq = non_spam_df$n, min.freq = 1, max.words=40, random.order=FALSE, colors = 'green', use.r.layout=FALSE)
+                      
+                      
+                      
                     }
                       
 ))
@@ -305,6 +319,7 @@ model = naiveBayes()
 ```{r Visualization}
 model$fit()
 model$score()
+model$frequentWords()
 ```
 
 ## To test the Bayes Classifier on real-world data...
