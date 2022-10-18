@@ -2,6 +2,10 @@
 
 ### Program to predict whtjer the message is spam or not
 
+### To see all explanations and all the work open file "Lab1_Naive_Bayes_Classifier_Templatee.html"
+
+
+ 
 ## Some results ran on the test data:
 
 
