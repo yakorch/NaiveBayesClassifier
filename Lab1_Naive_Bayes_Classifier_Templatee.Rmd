@@ -308,7 +308,7 @@ model$score()
 ```
 
 ## To test the Bayes Classifier on real-world data...
-use the method predict_from_string() method. Better use longer messages. Some examples would be:
+use the predict_from_string() method. Better use longer messages. Some examples would be:
 ```{r}
 model$predict_from_string("You have won a mobile phone. To get a free phone, call us at humber 2837123792!!!")
 model$predict_from_string("Hey mate, how is your life going?")
