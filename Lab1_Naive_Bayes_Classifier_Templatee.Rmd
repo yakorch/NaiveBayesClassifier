@@ -45,7 +45,7 @@ for more detailed explanations.
 
 ## Data description
 
-9-th team = 4 (mod 5)
+### 9-th team = 4 (mod 5)
 
 -   **4 - spam** This last data set contains SMS messages classified as
     spam or non-spam (ham in the data set). The task is to determine
@@ -59,7 +59,7 @@ for more detailed explanations.
 # though you may install other ones if they are needed
 library(tidytext)
 library(readr)
-# library(dplyr)
+library(dplyr)
 library(ggplot2)
 ```
 
@@ -123,7 +123,7 @@ splitted_stop_words <- splitted_stop_words[[1]]
 train <-  read.csv(file = train_path, stringsAsFactors = FALSE)
 test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 ```
-# Reforming the data into practical representation. Splitting each Message into list of words, and then combining all of them to one bag-of-words (df). Then, separating spam and non-spam parts of train df
+### Reforming the data into practical representation. Splitting each Message into list of words, and then combining all of them to one bag-of-words (df). Then, separating spam and non-spam parts of train df
 
 ```{r Cleaning the data}
 # note the power functional features of R bring us! 
@@ -147,11 +147,11 @@ positive examples as a histogram, word cloud etc. Be creative!
 
 ### TODO - Visualize the most frequent words
 
-## Classifier implementation
+# Classifier implementation
 
-# Splitting the test data in two parts for easier access to true positives, false positives ...
+### Splitting the test data in two parts for easier access to true positives, false positives ...
 
-# Calculating the ratio of spam or non-spam in a given training data
+### Calculating the ratio of spam or non-spam in a given training data
 
 ```{r Helping values}
 spam_test_df = test %>% filter(Category=="spam") %>% count(Category, Message, result=1)
@@ -160,13 +160,13 @@ is_spam = nrow(train %>% filter(Category=="spam"))/nrow(train)
 is_not_spam = 1 - is_spam
 ```
 
-# Method fit - tests how well the Classifier works (runs the test data and records the results)
+##### Method fit - tests how well the Classifier works (runs the test data and records the results)
 
-# Fields X_test and y_test serve to save these tests. They have one additional column - for the result. The result is 1 if a message was identified correctly. For test dataframe with spam message the correct prediction is 0 because 0 corresponds to spam, while 1 - to non-spam. This is why in test dataframe with non-spam the correct prediction is 1.
+##### Fields X_test and y_test serve to save these tests. They have one additional column - for the result. The result is 1 if a message was identified correctly. For test dataframe with spam message the correct prediction is 0 because 0 corresponds to spam, while 1 - to non-spam. This is why in test dataframe with non-spam the correct prediction is 1.
 
-# Method predict - predicts a message (spam or not). Input - a table 3x1 (Category, Message, result).
+##### Method predict - predicts a message (spam or not). Input - a table 3x1 (Category, Message, result).
 
-# Method score - Builds plots for better understanding of program's effectiveness.
+##### Method score - Builds plots for better understanding of program's effectiveness.
 
 ```{r Class Definition}
 naiveBayes <- setRefClass("naiveBayes",
@@ -305,7 +305,7 @@ model$fit()
 model$score()
 ```
 
-# To test the Bayes Classifier on real-world data, use the method predict_from_string() method. Better use longer messages. Some examples would be:
+## To test the Bayes Classifier on real-world data, use the method predict_from_string() method. Better use longer messages. Some examples would be:
 ```{r}
 model$predict_from_string("You have won a mobilw phone. To get a free phone, call us at humber 2837123792!!!")
 model$predict_from_string("Hey mate, how is your life going?")
