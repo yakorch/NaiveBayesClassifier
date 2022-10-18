@@ -113,15 +113,9 @@ spam_df <- df_with_categories %>% filter(Category=="spam")
 non_spam_df <- df_with_categories %>% filter(Category=="ham")
 ```
 
-### Data visualization
-
-Each time you work with some data, you need to understand it before you
-start processing it. R has very powerful tools to make nice plots and
-visualization. Show what are the most common words for negative and
-positive examples as a histogram, word cloud etc. Be creative!
 
 
-### TODO - Visualize the most frequent words
+
 
 # Classifier implementation
 
@@ -319,8 +313,21 @@ model = naiveBayes()
 ```{r Visualization}
 model$fit()
 model$score()
+
+```
+
+
+
+
+
+## Data visualization
+
+***Most frequent words in spam and non-spam:***
+
+```{r}
 model$frequentWords()
 ```
+
 
 ## To test the Bayes Classifier on real-world data...
 use the predict_from_string() method. Better use longer messages. Some examples would be:
