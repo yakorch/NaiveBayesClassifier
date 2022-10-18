@@ -253,6 +253,9 @@ naiveBayes <- setRefClass("naiveBayes",
                       ham_false <- y_test[y_test$result == FALSE, ]
                       ham_false_amount <- nrow(ham_false)
                       
+                      ham_true_amount = nrow(y_test) - nrow(ham_false)
+                      spam_false_amount = nrow(X_test) - nrow(spam_true)
+                      
                       Precision <- spam_true_amount / (spam_true_amount + 
                                                          ham_false_amount)
                       
@@ -260,34 +263,48 @@ naiveBayes <- setRefClass("naiveBayes",
                       
                       F1 <- 2 * (Precision * Recall / (Precision + Recall))
                       
-                      ham_true_amount = nrow(y_test) - nrow(ham_false)
-                      spam_false_amount = nrow(X_test) - nrow(spam_true)
+                      Precision_Ham  <- ham_true_amount / (ham_true_amount + spam_false_amount)
+                      
+                      Recall_Ham <- ham_true_amount / nrow(y_test)
+                      
+                      F1_Ham <- 2 * (Precision_Ham * Recall_Ham) / (Precision_Ham + Recall_Ham)
+                      
+                      Accuracy <- (spam_true_amount + ham_true_amount) / (nrow(X_test) + nrow(y_test))
+                      
                       numbers_of_guesses = 
-                        c(spam_true_amount, ham_true_amount, spam_false_amount
-                          ,ham_false_amount)
+                        as.matrix(data.frame(predicted = c(spam_true_amount, ham_true_amount), unpredicted = c(spam_false_amount, ham_false_amount)))
                       par(mfrow = c(1, 2))
                       
                       barplot(numbers_of_guesses,
                               main = "Predicted messages",
                               xlab = "Predictions",
                               ylab = "Number of messages",
-                              names.arg = c("Predicted right spam", "Predicted right 
-                                            ham", 
-                                            "Predicted wrong spam", "Predicted wrong 
-                                            ham"),
-                              col = c("green", "green", "red", "red"),
-                              horiz = FALSE)
+                              names.arg = c("Predicted", "Wrong predicted"),
+                              col = c("#1b98e0", "#353436"),
+                              horiz = FALSE,
+                              beside = TRUE)
+                      legend("topright",
+                             legend = c("Spam", "Ham"),
+                             fill = c("#1b98e0", "#353436"))
                       
-                      metrics <- c(Precision, Recall, F1)
+                      
+                      metrics <- as.matrix(data.frame(P = c(Precision, Precision_Ham), R = c(Recall, Recall_Ham), f = c(F1, F1_Ham), A = c(Accuracy, 0)))
                       barplot(
                         metrics,
+                        beside = TRUE,
                         main = "Predictions acuraccy",
                         xlab = "metrics",
                         ylab = "values",
-                        names.arg = c("Precision", "Recall", "F1 score"),
-                        col = "yellow",
+                        ylim = c(0, 1),
+                        names.arg = c("Precision", "Recall", "F1 score", "Accuracy"),
+                        col = c("#1b98e0", "#353436", "#1b98e0", "#353436", "#1b98e0", "#353436", "orange"),
                         horiz = FALSE)
-                      }
+                      
+                      legend("bottomright",              
+                          legend = c("Spam", "Ham", "Accuracy"),
+                          fill = c("#1b98e0", "#353436", "orange"))
+                    }
+                      
 ))
 
 model = naiveBayes()
