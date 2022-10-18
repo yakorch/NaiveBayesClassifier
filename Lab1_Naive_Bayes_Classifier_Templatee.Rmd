@@ -51,7 +51,7 @@ for more detailed explanations.
     spam or non-spam (ham in the data set). The task is to determine
     whether a given message is spam or non-spam.
 
-# *train.csv* is used to build a bag-of-words, while *test.csv* - to see how well the Bayes Classifier works
+## *train.csv* is used to build a bag-of-words, while *test.csv* - to see how well the Bayes Classifier works
 
 
 ```{r Including packages}
@@ -83,31 +83,6 @@ library(ggplot2)
 -   do not forget to submit both the (compiled) Rmd source file and the .html
     output
 
-### Data pre-processing
-
--   Read the *.csv* data files.
--   Сlear your data from punctuation or other unneeded symbols.
--   Clear you data from stop words. You don't want words as is, and, or
-    etc. to affect your probabilities distributions, so it is a wise
-    decision to get rid of them. Find list of stop words in the cms
-    under the lab task.
--   Represent each test message as its bag-of-words. Here:
-    <https://machinelearningmastery.com/gentle-introduction-bag-words-model/>
-    you can find general introduction to the bag-of-words model and
-    examples on to create it.
--   It is highly recommended to get familiar with R dataframes, it would
-    make the work much easier to do.
--   Useful links:
-    -   <https://steviep42.github.io/webscraping/book/bagofwords.html#tidytext> -
-        example of using *tidytext* to count frequencies of the words.
-    -   Basics of Text Mining in R:
-        <http://rstudio-pubs-static.s3.amazonaws.com/256588_57b585da6c054349825cba46685d8464.html>
-        . Note that it also includes an example on how to create a bag
-        of words from your text document.
-
-
-
-
 ## Linking all needed files and parsing stop words:
 
 ```{r Adding stop words}
@@ -123,7 +98,7 @@ splitted_stop_words <- splitted_stop_words[[1]]
 train <-  read.csv(file = train_path, stringsAsFactors = FALSE)
 test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 ```
-### Reforming the data into practical representation. Splitting each Message into list of words, and then combining all of them to one bag-of-words (df). Then, separating spam and non-spam parts of train df
+##### Reforming the data into practical representation. Splitting each Message into list of words, and then combining all of them to one bag-of-words (df). Then, separating spam and non-spam parts of train df
 
 ```{r Cleaning the data}
 # note the power functional features of R bring us! 
@@ -149,9 +124,9 @@ positive examples as a histogram, word cloud etc. Be creative!
 
 # Classifier implementation
 
-### Splitting the test data in two parts for easier access to true positives, false positives ...
+Splitting the test data in two parts for easier access to true positives, false positives ...
 
-### Calculating the ratio of spam or non-spam in a given training data
+Calculating the ratio of spam or non-spam in a given training data
 
 ```{r Helping values}
 spam_test_df = test %>% filter(Category=="spam") %>% count(Category, Message, result=1)
@@ -160,13 +135,17 @@ is_spam = nrow(train %>% filter(Category=="spam"))/nrow(train)
 is_not_spam = 1 - is_spam
 ```
 
-##### Method fit - tests how well the Classifier works (runs the test data and records the results)
 
-##### Fields X_test and y_test serve to save these tests. They have one additional column - for the result. The result is 1 if a message was identified correctly. For test dataframe with spam message the correct prediction is 0 because 0 corresponds to spam, while 1 - to non-spam. This is why in test dataframe with non-spam the correct prediction is 1.
 
-##### Method predict - predicts a message (spam or not). Input - a table 3x1 (Category, Message, result).
 
-##### Method score - Builds plots for better understanding of program's effectiveness.
+
+**Method fit** - tests how well the Classifier works (runs the test data and records the results)
+
+**Fields X_test and y_test** serve to save these tests. They have one additional column - for the result. The result is 1 if a message was identified correctly. For test dataframe with spam message the correct prediction is 0 because 0 corresponds to spam, while 1 - to non-spam. This is why in test dataframe with non-spam the correct prediction is 1.
+
+**Method predict** - predicts a message (spam or not). Input - a table 3x1 (Category, Message, result).
+
+**Method score** - Builds plots for better understanding of program's effectiveness.
 
 ```{r Class Definition}
 naiveBayes <- setRefClass("naiveBayes",
@@ -279,7 +258,7 @@ naiveBayes <- setRefClass("naiveBayes",
                               main = "Predicted messages",
                               xlab = "Predictions",
                               ylab = "Number of messages",
-                              names.arg = c("Predicted", "Wrong predicted"),
+                              names.arg = c("Correct Predictions", "Wrong predictions"),
                               col = c("#1b98e0", "#353436"),
                               horiz = FALSE,
                               beside = TRUE)
@@ -313,27 +292,30 @@ model = naiveBayes()
 ```
 
 ## Measure effectiveness of your classifier
--   Note that accuracy is not always a good metric for your classifier.
--   Look at precision and recall curves, F1 score metric.
--   Visualize them.
--   Show failure cases.
+
+- After testing the given data, results show 98% accuracy out of all data, while accuracy for separate parts differ.
+- Precision for spam messages (ratio of truly spam messages out of identified as spam ) = 138/(138+8) = 94.5 %
+- Precision for non-spam messages (ratio of truly non-spam messages out of identified as non-spam) 1053/(1053 + 14) = 98.7%
+- Recall for spam messages -- 90.8%
+- Recall for non-spam messages -- 99.25%
+- F1 score for spam messages -- 92.62%
+- F1 score for non-spam messages -- 98.97%
+
+
 ```{r Visualization}
 model$fit()
 model$score()
 ```
 
-## To test the Bayes Classifier on real-world data, use the method predict_from_string() method. Better use longer messages. Some examples would be:
+## To test the Bayes Classifier on real-world data...
+use the method predict_from_string() method. Better use longer messages. Some examples would be:
 ```{r}
-model$predict_from_string("You have won a mobilw phone. To get a free phone, call us at humber 2837123792!!!")
+model$predict_from_string("You have won a mobile phone. To get a free phone, call us at humber 2837123792!!!")
 model$predict_from_string("Hey mate, how is your life going?")
 ```
 ## Conclusions
 
-Summarize your work by explaining in a few sentences the points listed
-below.
 
--   Describe the method implemented in general. Show what are
-    mathematical foundations you are basing your solution on.
--   List pros and cons of the method. This should include the
-    limitations of your method, all the assumption you make about the
-    nature of your data etc.
+- The implemented method is Naive Bayes Classifier. We used it to predict the Category of a message. Choosing the probable category means calculating the probability of message belonging to each category and then picking the highest one. Since it is very unlikely for the message to repeat in train data, we divide the message into clean words (lowercase + no punctuation marks). Then probability for sentence = product of probabilities of each word. The bag-of-words helps quickly find matches in the training data.
+
+- The method doesn't process the meaning of a sentence, and just counts words.  The non-spam message might include words that often appear in spam. Then, the Classifier will mark it a 'spam'. It works vice versa too. To improve this method, words can be stored as phrases. Despite that, the method is easy to understand and quite effective to filter spam messages. As stats show, only 6 out 1061 non-spam were wrongly identified as spam.
